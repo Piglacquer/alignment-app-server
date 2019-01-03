@@ -3,11 +3,13 @@ package main
 import (
 	"database/sql"
 	"fmt"
-	"log"
 	"net/http"
 	"os"
 
 	_ "github.com/lib/pq"
+
+	"github.com/piglacquer/alignment-app-server/routes"
+	"github.com/piglacquer/alignment-app-server/server"
 )
 
 var db *sql.DB
@@ -21,19 +23,13 @@ const (
 )
 
 func main() {
+	app := server.App{"new"}
 	initDb()
 	defer db.Close()
-	http.HandleFunc("/api/index", indexHandler)
-	http.HandleFunc("/api/repo/", repoHandler)
-	log.Fatal(http.ListenAndServe("localhost:8000", nil))
-}
-
-func indexHandler(w http.ResponseWriter, r *http.Request) {
-	//...
-}
-
-func repoHandler(w http.ResponseWriter, r *http.Request) {
-	//...
+	http.HandleFunc("/api/shops", routes.ShopsHandler)
+	http.HandleFunc("/api/users", routes.UsersHandler)
+	app.Run()
+	// log.Fatal(http.ListenAndServe("localhost:8000", nil))
 }
 
 func initDb() {
